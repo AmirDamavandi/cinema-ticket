@@ -40,3 +40,11 @@ class User:
         self.date_joined = date_joined
         if signed_up:
             return f'you account has been created successfully'
+
+    def login(self):
+        username = input('enter your username: ')
+        password = input('enter your password: ')
+        if username == self.username and password == self.password:
+            return 'alright, you\'re in'
+        else:
+            return 'we could not find a user with this information'
