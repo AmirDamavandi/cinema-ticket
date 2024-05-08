@@ -1,5 +1,6 @@
 import datetime
 import uuid
+import re
 
 
 class User:
@@ -15,21 +16,28 @@ class User:
     def sign_up(self):
         signed_up = False
         username = input('enter your username: ')
-        if username != '' or username != ' ':
+        username_pattern = r'^[a-zA-Z0-9_.]+$'
+        if re.match(username_pattern, username):
             password = input('enter your password: ')
-            if password != '' or password != ' ':
+            password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,}$'
+            if re.match(password_pattern, password):
                 phone_number = input('enter your phone number or leave it blank: ')
                 if phone_number.isdigit() and len(phone_number) == 11 or phone_number == '':
-                    id = uuid.UUID
-                    birthday, birthmonth, birthyear = input('enter your birthday d m yyyy: ').split()
-                    birthdate = datetime.datetime(int(birthyear), int(birthmonth), int(birthday))
-                    date_joined = datetime.datetime.now()
+                    if phone_number == '':
+                        phone_number = None
+                    id = uuid.uuid4()
+                    try:
+                        birthday, birthmonth, birthyear = input('enter your birthday d m yyyy: ').split()
+                        birthdate = datetime.datetime(int(birthyear), int(birthmonth), int(birthday)).date()
+                        date_joined = datetime.datetime.now().date()
+                    except ValueError:
+                        return 'incorrect birthdate'
                 else:
-                    return 'wrong phone number'
+                    return 'incorrect phone number'
             else:
-                return 'wrong password'
+                return 'incorrect password'
         else:
-            return 'wrong phone number'
+            return 'incorrect username'
         signed_up = True
         self.username = username
         self.password = password
@@ -39,7 +47,7 @@ class User:
         self.birthdate = birthdate
         self.date_joined = date_joined
         if signed_up:
-            return f'you account has been created successfully'
+            return 'you account has been created successfully'
 
     def login(self):
         username = input('enter your username: ')
