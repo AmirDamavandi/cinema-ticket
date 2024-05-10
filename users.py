@@ -52,7 +52,7 @@ class User:
     def login(self):
         username = input('enter your username: ')
         password = input('enter your password: ')
-        if username == self.username and password == self.password:
+        if username.lower() == str(self.username).lower() and password == self.password:
             return 'alright, you\'re in'
         else:
             return 'we could not find a user with this information'
