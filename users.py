@@ -1,6 +1,7 @@
 import datetime
 import uuid
 import re
+import getpass
 
 
 class User:
@@ -18,7 +19,7 @@ class User:
         username = input('enter your username: ')
         username_pattern = r'^[a-zA-Z0-9_.]+$'
         if re.match(username_pattern, username):
-            password = input('enter your password: ')
+            password = getpass.getpass('enter your password: ')
             password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,}$'
             if re.match(password_pattern, password):
                 phone_number = input('enter your phone number or leave it blank: ')
@@ -51,7 +52,7 @@ class User:
 
     def login(self):
         username = input('enter your username: ')
-        password = input('enter your password: ')
+        password = getpass.getpass('enter your password: ')
         if username.lower() == str(self.username).lower() and password == self.password:
             return 'alright, you\'re in'
         else:

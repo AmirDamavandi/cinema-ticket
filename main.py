@@ -7,7 +7,7 @@ import re
 def logged_in():
     user = User(None, None, None, None, None, None)
     while True:
-        login_status = input('press 2 to login, 1 for signup, to close this enter 0: ')
+        login_status = input('press 2 to login, 1 for signup, to close this press 0: ')
         hashing = hashlib.new('SHA256')
         hashing.update(str(user.password).encode())
         user_information = {'username': user.username, 'password': hashing.hexdigest(),
@@ -26,7 +26,7 @@ def logged_in():
                     if options == '1':
                         while True:
                             security_options = input('to check your information press 1, to change information '
-                                                     'press 2, to change password press 3, press 0 to back: ')
+                                                     'press 2, press 0 to back: ')
                             if security_options == '1':
                                 print(f'username: {user_information['username']}'
                                       f'\npassword: {user_information['password']}'
@@ -91,6 +91,36 @@ def logged_in():
                                             else:
                                                 if new_phone_number != user.phone_number:
                                                     print(f'"{new_phone_number}" isn\'t a correct phone number')
+                                    elif information_changing == '3':
+                                        while True:
+                                            changed_password = False
+                                            current_password = getpass.getpass('enter your current password, press 0 '
+                                                                               'to cancel: ')
+                                            if current_password == '0':
+                                                break
+                                            if current_password == user.password:
+                                                password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,}$'
+                                                new_password = getpass.getpass('enter your new password: ')
+                                                if re.match(password_pattern, new_password):
+                                                    confirm_password = getpass.getpass('confirm your password: ')
+                                                    if confirm_password == new_password:
+                                                        user.password = confirm_password
+                                                        user_information = {'username': user.username,
+                                                                            'password': hashing.hexdigest(),
+                                                                            'phone_number': user.phone_number,
+                                                                            'id': user.id,
+                                                                            'birthdate': user.birthdate,
+                                                                            'date_joined': user.date_joined
+                                                                            }
+                                                        changed_password = True
+                                                        print('your password has changed successfully')
+                                                        break
+                                                    else:
+                                                        print('password does not match')
+                                                else:
+                                                    print('password is incorrect')
+                                            else:
+                                                print('password is wrong')
                                     elif information_changing == '0':
                                         break
                             elif security_options == '0':
