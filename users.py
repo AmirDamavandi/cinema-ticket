@@ -5,6 +5,7 @@ import getpass
 import json
 import os
 
+
 class User:
     def __init__(self, username, password, phone_number, id, birthdate, date_joined):
         self.username = username
@@ -104,7 +105,8 @@ class User:
                                                 username_pattern = r'^[a-zA-Z0-9_.]+$'
                                                 unique_username = os.listdir('users_information')
                                                 if (re.match(username_pattern, new_username)
-                                                        and new_username.lower() != str(matching_information['username']).lower()
+                                                        and new_username.lower() != str(
+                                                            matching_information['username']).lower()
                                                 ):
                                                     user_information = {
                                                         'username': new_username,
@@ -117,7 +119,8 @@ class User:
                                                     os.chdir('users_information')
                                                     os.renames(matching_information['username'], new_username.lower())
                                                     os.chdir('..')
-                                                    with open(f'users_information/{new_username}', 'w', encoding='utf-8') as username_changing:
+                                                    with open(f'users_information/{new_username}', 'w',
+                                                              encoding='utf-8') as username_changing:
                                                         json.dump(user_information, username_changing)
                                                     username_changing.close()
                                                     matching_information = user_information
@@ -126,15 +129,17 @@ class User:
                                                     break
                                                 elif not re.match(username_pattern, new_username):
                                                     print(f'"{new_username}" isn\'t a correct username')
-                                                elif new_username.lower() == str(matching_information['username']).lower():
+                                                elif new_username.lower() == str(
+                                                        matching_information['username']).lower():
                                                     print(f'"{new_username}" is current username')
                                             except FileExistsError:
                                                 print(f'"{new_username}" already taken')
 
                                     elif information_changing == '2':
                                         while True:
-                                            new_phone_number = input(f'your current "{matching_information['phone_number']}", enter new '
-                                                                     f'one, press 0 to cancel it: ')
+                                            new_phone_number = input(
+                                                f'your current "{matching_information['phone_number']}", enter new '
+                                                f'one, press 0 to cancel it: ')
                                             phone_number_changed = False
                                             if new_phone_number == '0':
                                                 break
@@ -184,7 +189,8 @@ class User:
                                                             'birthdate': matching_information['birthdate'],
                                                             'date_joined': matching_information['date_joined'],
                                                         }
-                                                        with open(f'users_information/{matching_information['username']}',
+                                                        with open(
+                                                                f'users_information/{matching_information['username']}',
                                                                 'w',
                                                                 encoding='utf-8') as password_changing:
                                                             json.dump(user_information, password_changing)
@@ -207,5 +213,3 @@ class User:
                 return 'your password does not match'
         except FileNotFoundError:
             return 'there\'s no user with this information'
-
-
