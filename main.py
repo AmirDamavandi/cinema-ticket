@@ -81,7 +81,8 @@ def logged_in():
                                                 user.phone_number = new_phone_number
                                                 user_information = {'username': user.username,
                                                                     'password': hashing.hexdigest(),
-                                                                    'phone_number': user.phone_number, 'id': user.id,
+                                                                    'phone_number': user.phone_number,
+                                                                    'id': user.id,
                                                                     'birthdate': user.birthdate,
                                                                     'date_joined': user.date_joined
                                                                     }
@@ -105,6 +106,8 @@ def logged_in():
                                                     confirm_password = getpass.getpass('confirm your password: ')
                                                     if confirm_password == new_password:
                                                         user.password = confirm_password
+                                                        hashing = hashlib.new('SHA256')
+                                                        hashing.update(str(user.password).encode())
                                                         user_information = {'username': user.username,
                                                                             'password': hashing.hexdigest(),
                                                                             'phone_number': user.phone_number,
