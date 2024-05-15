@@ -170,22 +170,24 @@ class User:
                                                                                'to cancel: ')
                                             if current_password == '0':
                                                 break
-                                            if current_password == user.password:
+                                            if current_password == matching_information['password']:
                                                 password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,}$'
                                                 new_password = getpass.getpass('enter your new password: ')
                                                 if re.match(password_pattern, new_password):
                                                     confirm_password = getpass.getpass('confirm your password: ')
                                                     if confirm_password == new_password:
-                                                        user.password = confirm_password
-                                                        hashing = hashlib.new('SHA256')
-                                                        hashing.update(str(user.password).encode())
-                                                        user_information = {'username': user.username,
-                                                                            'password': hashing.hexdigest(),
-                                                                            'phone_number': user.phone_number,
-                                                                            'id': user.id,
-                                                                            'birthdate': user.birthdate,
-                                                                            'date_joined': user.date_joined
-                                                                            }
+                                                        user_information = {
+                                                            'username': matching_information['username'],
+                                                            'password': confirm_password,
+                                                            'phone_number': matching_information['phone_number'],
+                                                            'id': matching_information['id'],
+                                                            'birthdate': matching_information['birthdate'],
+                                                            'date_joined': matching_information['date_joined'],
+                                                        }
+                                                        with open(f'users_information/{matching_information['username']}',
+                                                                'w',
+                                                                encoding='utf-8') as password_changing:
+                                                            json.dump(user_information, password_changing)
                                                         changed_password = True
                                                         print('your password has changed successfully')
                                                         break
