@@ -133,30 +133,35 @@ class User:
 
                                     elif information_changing == '2':
                                         while True:
-                                            new_phone_number = input(f'your current "{user.phone_number}", enter new '
+                                            new_phone_number = input(f'your current "{matching_information['phone_number']}", enter new '
                                                                      f'one, press 0 to cancel it: ')
                                             phone_number_changed = False
                                             if new_phone_number == '0':
                                                 break
-                                            if user.phone_number is not None:
-                                                if new_phone_number == user.phone_number:
+                                            if matching_information['phone_number'] is not None:
+                                                if new_phone_number == matching_information['phone_number']:
                                                     print(f'"{new_phone_number}" is current phone number')
                                             if (new_phone_number.isdigit() and len(new_phone_number) == 11
-                                                    and new_phone_number != user.phone_number
+                                                    and new_phone_number != matching_information['phone_number']
                                             ):
-                                                user.phone_number = new_phone_number
-                                                user_information = {'username': user.username,
-                                                                    'password': hashing.hexdigest(),
-                                                                    'phone_number': user.phone_number,
-                                                                    'id': user.id,
-                                                                    'birthdate': user.birthdate,
-                                                                    'date_joined': user.date_joined
-                                                                    }
+                                                user_information = {
+                                                    'username': matching_information['username'],
+                                                    'password': matching_information['password'],
+                                                    'phone_number': new_phone_number,
+                                                    'id': matching_information['id'],
+                                                    'birthdate': matching_information['birthdate'],
+                                                    'date_joined': matching_information['date_joined'],
+                                                }
+                                                with open(f'users_information/{matching_information['username']}', 'w',
+                                                          encoding='utf-8') as phone_number_changing:
+                                                    json.dump(user_information, phone_number_changing)
+                                                phone_number_changing.close()
+                                                matching_information = user_information
                                                 phone_number_changed = True
                                                 print('your phone number has been changed successfully')
                                                 break
                                             else:
-                                                if new_phone_number != user.phone_number:
+                                                if new_phone_number != matching_information['phone_number']:
                                                     print(f'"{new_phone_number}" isn\'t a correct phone number')
                                     elif information_changing == '3':
                                         while True:
