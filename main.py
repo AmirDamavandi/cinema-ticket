@@ -11,8 +11,6 @@ def logged_in():
         elif login_status == '2':
             login = user.login()
             print(login)
-            if login == 'alright, you\'re in':
-                pass
         elif login_status == '0':
             break
 
