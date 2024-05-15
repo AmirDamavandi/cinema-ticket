@@ -2,7 +2,8 @@ import datetime
 import uuid
 import re
 import getpass
-
+import json
+import os
 
 class User:
     def __init__(self, username, password, phone_number, id, birthdate, date_joined):
@@ -19,24 +20,28 @@ class User:
         username = input('enter your username: ')
         username_pattern = r'^[a-zA-Z0-9_.]+$'
         if re.match(username_pattern, username):
-            password = getpass.getpass('enter your password: ')
-            password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,}$'
-            if re.match(password_pattern, password):
-                phone_number = input('enter your phone number or leave it blank: ')
-                if phone_number.isdigit() and len(phone_number) == 11 or phone_number == '':
-                    if phone_number == '':
-                        phone_number = None
-                    id = uuid.uuid4()
-                    try:
-                        birthday, birthmonth, birthyear = input('enter your birthday d m yyyy: ').split()
-                        birthdate = datetime.datetime(int(birthyear), int(birthmonth), int(birthday)).date()
-                        date_joined = datetime.datetime.now().date()
-                    except ValueError:
-                        return 'incorrect birthdate'
+            unique_username = os.listdir('users_information')
+            if not username in unique_username:
+                password = getpass.getpass('enter your password: ')
+                password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,}$'
+                if re.match(password_pattern, password):
+                    phone_number = input('enter your phone number or leave it blank: ')
+                    if phone_number.isdigit() and len(phone_number) == 11 or phone_number == '':
+                        if phone_number == '':
+                            phone_number = None
+                        id = uuid.uuid4()
+                        try:
+                            birthday, birthmonth, birthyear = input('enter your birthday d m yyyy: ').split()
+                            birthdate = datetime.datetime(int(birthyear), int(birthmonth), int(birthday)).date()
+                            date_joined = datetime.datetime.now().date()
+                        except ValueError:
+                            return 'incorrect birthdate'
+                    else:
+                        return 'incorrect phone number'
                 else:
-                    return 'incorrect phone number'
+                    return 'incorrect password'
             else:
-                return 'incorrect password'
+                return 'this username already exist'
         else:
             return 'incorrect username'
         signed_up = True
@@ -45,9 +50,19 @@ class User:
         self.phone_number = phone_number
         self.id = id
         self.birthdate = birthdate
-        self.birthdate = birthdate
         self.date_joined = date_joined
         if signed_up:
+            users_information = {
+                'username': self.username,
+                'password': self.password,
+                'phone_number': self.phone_number,
+                'id': str(self.id),
+                'birthdate': str(self.birthdate),
+                'date_joined': str(self.date_joined),
+
+            }
+            with open(f'users_information/{username}', 'w+', encoding='utf-8') as information:
+                json.dump(users_information, information)
             return 'your account has been created successfully'
 
     def login(self):
