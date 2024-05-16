@@ -6,11 +6,9 @@ def logged_in():
     while True:
         login_status = input('press 2 to login, 1 for signup, to close this press 0: ')
         if login_status == '1':
-            sign_up = user.sign_up()
-            print(sign_up)
+            print(user.sign_up())
         elif login_status == '2':
-            login = user.login()
-            print(login)
+            user.login()
         elif login_status == '0':
             break
 
