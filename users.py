@@ -67,6 +67,7 @@ class User:
             return 'your account has been created successfully'
 
     def login(self):
+        logged_in = False
         username = input('enter your username: ').lower()
         password = getpass.getpass('enter your password: ')
         user_exist = os.listdir('users_information')
@@ -75,8 +76,10 @@ class User:
                 matching_information = json.load(login_information)
             if username == str(matching_information['username']).lower() and password == matching_information['password']:
                 logged_in = True
+            if logged_in:
+                print('logged in successfully!')
                 while True:
-                    options = input('logged in successfully! \nsecurity and privacy: 1, press 0 to log out: ')
+                    options = input('security and privacy: 1, press 0 to log out: ')
                     if options == '1':
                         while True:
                             security_options = input('to check your information press 1, to change information '
