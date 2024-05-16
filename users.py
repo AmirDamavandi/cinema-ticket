@@ -16,6 +16,10 @@ class BankAccount:
         self.pin = pin
         self.balance = balance
 
+    def withdraw(self, amount):
+        if self.balance >= amount:
+            self.balance -= amount
+            return f'{self.balance} was withdrawn from your account'
 
 
 
