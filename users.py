@@ -6,8 +6,21 @@ import json
 import os
 
 
+class BankAccount:
+    def __init__(self, full_name, card_number, cvv2, exp_year, exp_month, pin, balance):
+        self.full_name = full_name
+        self.card_number = card_number
+        self.cvv2 = cvv2
+        self.exp_year = exp_year
+        self.exp_month = exp_month
+        self.pin = pin
+        self.balance = balance
+
+
+
+
 class User:
-    def __init__(self, username, password, phone_number, id, birthdate, date_joined):
+    def __init__(self, username, password, phone_number, id, birthdate, date_joined, wallet):
         self.username = username
         self.password = password
         self.phone_number = phone_number
@@ -15,6 +28,7 @@ class User:
         self.birthdate = birthdate
         self.birthdate = birthdate
         self.date_joined = date_joined
+        self.wallet = wallet
 
     def sign_up(self):
         signed_up = False
@@ -31,6 +45,7 @@ class User:
                         if phone_number == '':
                             phone_number = None
                         id = uuid.uuid4()
+                        wallet = 0
                         try:
                             birthday, birthmonth, birthyear = input('enter your birthday d m yyyy: ').split()
                             birthdate = datetime.datetime(int(birthyear), int(birthmonth), int(birthday)).date()
@@ -52,6 +67,7 @@ class User:
         self.id = id
         self.birthdate = birthdate
         self.date_joined = date_joined
+        self.wallet = wallet
         if signed_up:
             users_information = {
                 'username': self.username,
@@ -60,6 +76,7 @@ class User:
                 'id': str(self.id),
                 'birthdate': str(self.birthdate),
                 'date_joined': str(self.date_joined),
+                'wallet': self.wallet
 
             }
             with open(f'users_information/{username.lower()}', 'w+', encoding='utf-8') as information:
@@ -93,7 +110,8 @@ class User:
                                           f'\nphone number: {matching_information['phone_number']}'
                                           f'\nid: {matching_information['id']}'
                                           f'\nbirthdate: {matching_information['birthdate']}'
-                                          f'\ndate joined: {matching_information['date_joined']}')
+                                          f'\ndate joined: {matching_information['date_joined']}'
+                                          f'\nwallet: {matching_information['wallet']}')
                                 elif security_options == '2':
                                     while True:
                                         information_changing = input(
