@@ -25,11 +25,37 @@ class BankAccount:
         self.balance += amount
 
 
-bank_account = BankAccount(None, None, None, None, None, None, None)
+user_account = None
+
+
+def payment():
+    full_name = input('your full name on card: ')
+    card_number = input('enter your card number: ')
+    if card_number.isdigit() and len(card_number) == 16:
+        cvv2 = input('enter cvv2: ')
+        if cvv2.isdigit() and len(cvv2) == 3 or len(cvv2) == 4:
+            expire_month, expire_year = input('enter expire year and expire month (mm yy): ').split()
+            if str(expire_year).isdigit() and len(expire_year) == 2 and str(expire_month).isdigit() and len(expire_month) == 2:
+                expire_date_pattern = r'(0[1-9]|1[0-2])\/\d{2}'
+                if re.match(expire_date_pattern, expire_month) and re.match(expire_date_pattern, expire_month):
+                    card_pin = input('enter your card pin: ')
+                    if card_pin.isdigit() and 4 <= len(card_pin) <= 6:
+                        balance = 100
+                        BankAccount(full_name, card_number, cvv2, expire_year, expire_month, card_pin, balance)
+                    else:
+                        return 'card pin is incorrect'
+                else:
+                    return 'expire date is incorrect'
+            else:
+                return 'expire date is incorrect'
+        else:
+            return 'cvv2 is incorrect'
+    else:
+        return 'card number is incorrect'
 
 
 class User:
-    def __init__(self, username, password, phone_number, id, birthdate, date_joined, wallet):
+    def __init__(self, username, password, phone_number, id, birthdate, date_joined, plans):
         self.username = username
         self.password = password
         self.phone_number = phone_number
@@ -37,7 +63,7 @@ class User:
         self.birthdate = birthdate
         self.birthdate = birthdate
         self.date_joined = date_joined
-        self.wallet = wallet
+        self.plans = plans
 
     def sign_up(self):
         signed_up = False
@@ -54,7 +80,7 @@ class User:
                         if phone_number == '':
                             phone_number = None
                         id = uuid.uuid4()
-                        wallet = 0
+                        plans = None
                         try:
                             birthday, birthmonth, birthyear = input('enter your birthday d m yyyy: ').split()
                             birthdate = datetime.datetime(int(birthyear), int(birthmonth), int(birthday)).date()
@@ -76,7 +102,7 @@ class User:
         self.id = id
         self.birthdate = birthdate
         self.date_joined = date_joined
-        self.wallet = wallet
+        self.plans = plans
         if signed_up:
             users_information = {
                 'username': self.username,
@@ -85,7 +111,7 @@ class User:
                 'id': str(self.id),
                 'birthdate': str(self.birthdate),
                 'date_joined': str(self.date_joined),
-                'wallet': self.wallet
+                'plans': self.plans
 
             }
             with open(f'users_information/{username.lower()}', 'w+', encoding='utf-8') as information:
@@ -108,7 +134,7 @@ class User:
                 if logged_in:
                     print('logged in successfully!')
                     while True:
-                        options = input('security and privacy: 1, to order a ticket press 2 and 0 to log out: ')
+                        options = input('security and privacy: 1, to get a plan 2 and 0 to log out: ')
                         if options == '1':
                             while True:
                                 security_options = input('to check your information press 1, to change information '
@@ -120,7 +146,7 @@ class User:
                                           f'\nid: {matching_information['id']}'
                                           f'\nbirthdate: {matching_information['birthdate']}'
                                           f'\ndate joined: {matching_information['date_joined']}'
-                                          f'\nwallet: {matching_information['wallet']}')
+                                          f'\nplans: {matching_information['plans']}')
                                 elif security_options == '2':
                                     while True:
                                         information_changing = input(
@@ -244,7 +270,15 @@ class User:
                                 elif security_options == '0':
                                     break
                         elif options == '2':
-                            pass
+                            bronze_plan_price = 20
+                            silver_plan_price = 50
+                            gold_plan_price = 150
+                            select_a_plan = input(f'1-bronze price : {bronze_plan_price}\n'
+                                                  f'2-silver price : {silver_plan_price}\n'
+                                                  f'3-gold price : {gold_plan_price}\n'
+                                                  f'choose one of above, to get back press 0: ')
+                            if select_a_plan == '1':
+                                print(payment())
                         elif options == '0':
                             break
                 else:
