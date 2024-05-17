@@ -21,6 +21,11 @@ class BankAccount:
             self.balance -= amount
             return f'{self.balance} was withdrawn from your account'
 
+    def deposit(self, amount):
+        self.balance += amount
+
+
+bank_account = BankAccount(None, None, None, None, None, None, None)
 
 
 class User:
@@ -103,7 +108,7 @@ class User:
                 if logged_in:
                     print('logged in successfully!')
                     while True:
-                        options = input('security and privacy: 1, press 0 to log out: ')
+                        options = input('security and privacy: 1, to order a ticket press 2 and 0 to log out: ')
                         if options == '1':
                             while True:
                                 security_options = input('to check your information press 1, to change information '
@@ -238,6 +243,8 @@ class User:
                                             break
                                 elif security_options == '0':
                                     break
+                        elif options == '2':
+                            pass
                         elif options == '0':
                             break
                 else:
