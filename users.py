@@ -219,29 +219,32 @@ class User:
                                                     password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,200}$'
                                                     new_password = getpass.getpass('enter your new password: ')
                                                     if re.match(password_pattern, new_password):
-                                                        confirm_password = getpass.getpass('confirm your password: ')
-                                                        if confirm_password == new_password:
-                                                            user_information = {
-                                                                'username': matching_information['username'],
-                                                                'password': confirm_password,
-                                                                'phone_number': matching_information['phone_number'],
-                                                                'id': matching_information['id'],
-                                                                'birthdate': matching_information['birthdate'],
-                                                                'date_joined': matching_information['date_joined'],
-                                                                'plans': matching_information['plans']
-                                                            }
-                                                            with open(
-                                                                    f'users_information/{matching_information['username']}',
-                                                                    'w',
-                                                                    encoding='utf-8') as password_changing:
-                                                                json.dump(user_information, password_changing)
-                                                            password_changing.close()
-                                                            matching_information = user_information
-                                                            changed_password = True
-                                                            print('your password has changed successfully')
-                                                            break
+                                                        if new_password != matching_information['password']:
+                                                            confirm_password = getpass.getpass('confirm your password: ')
+                                                            if confirm_password == new_password:
+                                                                user_information = {
+                                                                    'username': matching_information['username'],
+                                                                    'password': confirm_password,
+                                                                    'phone_number': matching_information['phone_number'],
+                                                                    'id': matching_information['id'],
+                                                                    'birthdate': matching_information['birthdate'],
+                                                                    'date_joined': matching_information['date_joined'],
+                                                                    'plans': matching_information['plans']
+                                                                }
+                                                                with open(
+                                                                        f'users_information/{matching_information['username']}',
+                                                                        'w',
+                                                                        encoding='utf-8') as password_changing:
+                                                                    json.dump(user_information, password_changing)
+                                                                password_changing.close()
+                                                                matching_information = user_information
+                                                                changed_password = True
+                                                                print('your password has changed successfully')
+                                                                break
+                                                            else:
+                                                                print('password does not match')
                                                         else:
-                                                            print('password does not match')
+                                                            print('it\'s your current password')
                                                     else:
                                                         print('password is incorrect')
                                                 else:
