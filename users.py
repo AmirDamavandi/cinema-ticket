@@ -5,7 +5,7 @@ import getpass
 import json
 import os
 import random
-
+import hashlib
 
 class BankAccount:
     def __init__(self, full_name, card_number, cvv2, exp_year, exp_month, pin, balance):
@@ -115,8 +115,9 @@ class User:
                                 security_options = input('to check your information press 1, to change information '
                                                          'press 2, press 0 to back: ')
                                 if security_options == '1':
+                                    hash_pass = hashlib.sha256(matching_information['password'].encode('utf-8'))
                                     print(f'username: {matching_information['username']}'
-                                          f'\npassword: {matching_information['password']}'
+                                          f'\npassword: {hash_pass.hexdigest()}'
                                           f'\nphone number: {matching_information['phone_number']}'
                                           f'\nid: {matching_information['id']}'
                                           f'\nbirthdate: {matching_information['birthdate']}'
@@ -297,11 +298,11 @@ class User:
                                                                     'username']}','w', encoding='utf-8') as bronze_plan:
                                                                     json.dump(user_information, bronze_plan)
                                                                 bronze_plan.close()
+                                                                matching_information['plans'] = 'Bronze plan'
                                                                 return 'you got the plan successfully'
                                                             else:
                                                                 return 'insufficient inventory'
                                                         elif select_a_plan == '2':
-                                                            print(user_bank_account.balance)
                                                             if (user_bank_account.withdraw(silver_plan_price) ==
                                                                     'successful transaction'
                                                                 and matching_information['plans'] != 'Silver plan'
@@ -319,7 +320,8 @@ class User:
                                                                 with open(f'users_information/{matching_information[
                                                                         'username']}','w', encoding='utf-8') as silver_plan:
                                                                     json.dump(user_information, silver_plan)
-                                                                print(user_bank_account.balance)
+                                                                silver_plan.close()
+                                                                matching_information['plans'] = 'Silver plan'
                                                                 return 'you got the plan successfully'
                                                             else:
                                                                 return 'insufficient inventory'
@@ -341,6 +343,8 @@ class User:
                                                                 with open(f'users_information/{matching_information[
                                                                         'username']}','w', encoding='utf-8') as gold_plan:
                                                                     json.dump(user_information, gold_plan)
+                                                                gold_plan.close()
+                                                                matching_information['plans'] = 'Gold plan'
                                                                 return 'you got the plan successfully'
                                                             else:
                                                                 return 'insufficient inventory'
