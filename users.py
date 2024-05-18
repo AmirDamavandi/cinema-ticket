@@ -4,6 +4,7 @@ import re
 import getpass
 import json
 import os
+import random
 
 
 class BankAccount:
@@ -19,39 +20,12 @@ class BankAccount:
     def withdraw(self, amount):
         if self.balance >= amount:
             self.balance -= amount
-            return f'{self.balance} was withdrawn from your account'
+            return 'successful transaction'
+        else:
+            return 'insufficient inventory'
 
     def deposit(self, amount):
         self.balance += amount
-
-
-user_account = None
-
-
-def payment():
-    full_name = input('your full name on card: ')
-    card_number = input('enter your card number: ')
-    if card_number.isdigit() and len(card_number) == 16:
-        cvv2 = input('enter cvv2: ')
-        if cvv2.isdigit() and len(cvv2) == 3 or len(cvv2) == 4:
-            expire_month, expire_year = input('enter expire year and expire month (mm yy): ').split()
-            if str(expire_year).isdigit() and len(expire_year) == 2 and str(expire_month).isdigit() and len(expire_month) == 2:
-                expire_date_pattern = r'(0[1-9]|1[0-2])\/\d{2}'
-                if re.match(expire_date_pattern, expire_month) and re.match(expire_date_pattern, expire_month):
-                    card_pin = input('enter your card pin: ')
-                    if card_pin.isdigit() and 4 <= len(card_pin) <= 6:
-                        balance = 100
-                        BankAccount(full_name, card_number, cvv2, expire_year, expire_month, card_pin, balance)
-                    else:
-                        return 'card pin is incorrect'
-                else:
-                    return 'expire date is incorrect'
-            else:
-                return 'expire date is incorrect'
-        else:
-            return 'cvv2 is incorrect'
-    else:
-        return 'card number is incorrect'
 
 
 class User:
@@ -116,6 +90,7 @@ class User:
             }
             with open(f'users_information/{username.lower()}', 'w+', encoding='utf-8') as information:
                 json.dump(users_information, information)
+            information.close()
             return 'your account has been created successfully'
 
     def login(self):
@@ -175,6 +150,7 @@ class User:
                                                         'id': matching_information['id'],
                                                         'birthdate': matching_information['birthdate'],
                                                         'date_joined': matching_information['date_joined'],
+                                                        'plans': matching_information['plans']
                                                     }
                                                     os.chdir('users_information')
                                                     os.renames(matching_information['username'], new_username.lower())
@@ -216,6 +192,7 @@ class User:
                                                         'id': matching_information['id'],
                                                         'birthdate': matching_information['birthdate'],
                                                         'date_joined': matching_information['date_joined'],
+                                                        'plans': matching_information['plans']
                                                     }
                                                     with open(f'users_information/{matching_information['username']}',
                                                               'w',
@@ -238,7 +215,7 @@ class User:
                                                 if current_password == '0':
                                                     break
                                                 if current_password == matching_information['password']:
-                                                    password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,}$'
+                                                    password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,200}$'
                                                     new_password = getpass.getpass('enter your new password: ')
                                                     if re.match(password_pattern, new_password):
                                                         confirm_password = getpass.getpass('confirm your password: ')
@@ -250,12 +227,15 @@ class User:
                                                                 'id': matching_information['id'],
                                                                 'birthdate': matching_information['birthdate'],
                                                                 'date_joined': matching_information['date_joined'],
+                                                                'plans': matching_information['plans']
                                                             }
                                                             with open(
                                                                     f'users_information/{matching_information['username']}',
                                                                     'w',
                                                                     encoding='utf-8') as password_changing:
                                                                 json.dump(user_information, password_changing)
+                                                            password_changing.close()
+                                                            matching_information = user_information
                                                             changed_password = True
                                                             print('your password has changed successfully')
                                                             break
@@ -270,15 +250,136 @@ class User:
                                 elif security_options == '0':
                                     break
                         elif options == '2':
-                            bronze_plan_price = 20
-                            silver_plan_price = 50
-                            gold_plan_price = 150
-                            select_a_plan = input(f'1-bronze price : {bronze_plan_price}\n'
-                                                  f'2-silver price : {silver_plan_price}\n'
-                                                  f'3-gold price : {gold_plan_price}\n'
-                                                  f'choose one of above, to get back press 0: ')
-                            if select_a_plan == '1':
-                                print(payment())
+                            while True:
+                                bronze_plan_price = 20
+                                silver_plan_price = 50
+                                gold_plan_price = 150
+                                select_a_plan = input(f'1-bronze price : {bronze_plan_price}\n'
+                                                      f'2-silver price : {silver_plan_price}\n'
+                                                      f'3-gold price : {gold_plan_price}\n'
+                                                      f'choose one of above, to get back press 0: ')
+                                def payment():
+                                    full_name = input('your full name on card: ')
+                                    card_number = input('enter your card number: ')
+                                    if card_number.isdigit() and len(card_number) == 16:
+                                        cvv2 = input('enter cvv2: ')
+                                        if cvv2.isdigit() and len(cvv2) == 3 or len(cvv2) == 4:
+                                            expire_month, expire_year = input(
+                                                'enter expire month and expire year (mm yy): ').split()
+                                            if str(expire_year).isdigit() and len(expire_year) == 2 and str(
+                                                    expire_month).isdigit() and len(expire_month) == 2:
+                                                expire_month_pattern = r'(0[1-9]|[0-2])'
+                                                expire_year_pattern = r'\d{2}'
+                                                if re.match(expire_month_pattern, expire_month) and re.match(
+                                                        expire_year_pattern, expire_month):
+                                                    card_pin = input('enter your card pin: ')
+                                                    if card_pin.isdigit() and 4 <= len(card_pin) <= 6:
+                                                        balance = random.randint(0, 1000)
+                                                        user_bank_account = BankAccount(full_name, card_number, cvv2,
+                                                                                        expire_year, expire_month,
+                                                                                        card_pin, balance)
+                                                        if select_a_plan == '1':
+                                                            if (user_bank_account.withdraw(bronze_plan_price) ==
+                                                                    'successful transaction'
+                                                                and matching_information['plans'] != 'Bronze plan'
+
+                                                            ):
+                                                                user_information = {
+                                                                    'username': matching_information['username'],
+                                                                    'password': matching_information['password'],
+                                                                    'phone_number': matching_information['phone_number'],
+                                                                    'id': matching_information['id'],
+                                                                    'birthdate': matching_information['birthdate'],
+                                                                    'date_joined': matching_information['date_joined'],
+                                                                    'plans': 'Bronze plan'
+                                                                }
+                                                                with open(f'users_information/{matching_information[
+                                                                    'username']}','w', encoding='utf-8') as bronze_plan:
+                                                                    json.dump(user_information, bronze_plan)
+                                                                bronze_plan.close()
+                                                                return 'you got the plan successfully'
+                                                            else:
+                                                                return 'insufficient inventory'
+                                                        elif select_a_plan == '2':
+                                                            print(user_bank_account.balance)
+                                                            if (user_bank_account.withdraw(silver_plan_price) ==
+                                                                    'successful transaction'
+                                                                and matching_information['plans'] != 'Silver plan'
+
+                                                            ):
+                                                                user_information = {
+                                                                    'username': matching_information['username'],
+                                                                    'password': matching_information['password'],
+                                                                    'phone_number': matching_information['phone_number'],
+                                                                    'id': matching_information['id'],
+                                                                    'birthdate': matching_information['birthdate'],
+                                                                    'date_joined': matching_information['date_joined'],
+                                                                    'plans': 'Silver plan'
+                                                                }
+                                                                with open(f'users_information/{matching_information[
+                                                                        'username']}','w', encoding='utf-8') as silver_plan:
+                                                                    json.dump(user_information, silver_plan)
+                                                                print(user_bank_account.balance)
+                                                                return 'you got the plan successfully'
+                                                            else:
+                                                                return 'insufficient inventory'
+                                                        elif select_a_plan == '3':
+                                                            if (user_bank_account.withdraw(gold_plan_price) ==
+                                                                    'successful transaction'
+                                                                and matching_information['plans'] != 'Gold plan'
+
+                                                            ):
+                                                                user_information = {
+                                                                    'username': matching_information['username'],
+                                                                    'password': matching_information['password'],
+                                                                    'phone_number': matching_information['phone_number'],
+                                                                    'id': matching_information['id'],
+                                                                    'birthdate': matching_information['birthdate'],
+                                                                    'date_joined': matching_information['date_joined'],
+                                                                    'plans': 'Gold plan'
+                                                                }
+                                                                with open(f'users_information/{matching_information[
+                                                                        'username']}','w', encoding='utf-8') as gold_plan:
+                                                                    json.dump(user_information, gold_plan)
+                                                                return 'you got the plan successfully'
+                                                            else:
+                                                                return 'insufficient inventory'
+                                                        else:
+                                                            return 'invalid choice'
+                                                    else:
+                                                        return 'card pin is incorrect'
+                                                else:
+                                                    return 'expire date is incorrect'
+                                            else:
+                                                return 'expire date is incorrect'
+                                        else:
+                                            return 'cvv2 is incorrect'
+                                    else:
+                                        return 'card number is incorrect'
+                                if (
+                                    select_a_plan == '1' or select_a_plan.lower() == 'bronze plan'
+                                ):
+                                    if matching_information['plans'] != 'Bronze plan':
+                                        print(payment())
+                                    else:
+                                        print('it\'s your current plan')
+                                elif (
+                                    select_a_plan == '2' or select_a_plan.lower() == 'silver plan'
+                                ):
+                                    if matching_information['plans'] != 'Silver plan':
+                                        print(payment())
+                                    else:
+                                        print('it\'s your current plan')
+                                elif (
+                                    select_a_plan == '3' or select_a_plan.lower() == 'gold plan'
+                                ):
+                                    if matching_information['plans'] != 'Gold plan':
+                                        print(payment())
+                                    else:
+                                        print('it\'s your current plan')
+                                elif select_a_plan == '0':
+                                    break
+                                else:print('invalid choice')
                         elif options == '0':
                             break
                 else:
