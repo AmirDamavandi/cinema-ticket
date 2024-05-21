@@ -1,4 +1,5 @@
 import datetime
+import time
 import uuid
 import re
 import getpass
@@ -7,13 +8,7 @@ import os
 import random
 import hashlib
 from abc import ABC, abstractmethod
-
-
-class Movie:
-    def __init__(self, name, show_date, remaining_tickets):
-        self.name = name
-        self.show_date = show_date
-        self.remaining_tickets = remaining_tickets
+import jdatetime
 
 
 class BankAccount:
@@ -338,8 +333,8 @@ class User(AbstractUser):
                                                             ):
                                                                 user_information['plans'] = 'Gold plan'
                                                                 with (open(f'users_information/{matching_information[
-                                                                        'username']}', 'w', encoding='utf-8') as
-                                                                        gold_plan):
+                                                                    'username']}', 'w', encoding='utf-8') as
+                                                                      gold_plan):
                                                                     json.dump(user_information, gold_plan)
                                                                 gold_plan.close()
                                                                 matching_information['plans'] = 'Gold plan'
@@ -473,7 +468,7 @@ class Admin(AbstractUser):
                 if logged_in:
                     print('logged in successfully!')
                     while True:
-                        options = input('security and privacy: 1, to get a plan 2 and 0 to log out: ')
+                        options = input('security and privacy: 1, to add a movie to show 2 and 0 to log out: ')
                         if options == '1':
                             while True:
                                 security_options = input('to check your information press 1, to change information '
@@ -596,7 +591,37 @@ class Admin(AbstractUser):
                                 elif security_options == '0':
                                     break
                         elif options == '2':
-                            pass
+                            while True:
+                                movie_name = input('movie name, 0 to break: ')
+                                if movie_name == '0':
+                                    break
+                                movie_list = os.listdir('movies')
+
+                                if not movie_name.lower() in movie_list:
+                                    try:
+                                        show_day, show_month, show_year = (
+                                            input('enter show date, d m yyyy: ').split())
+                                        show_hour = input('enter show hour (24 hour format): ')
+                                        show_year = int(show_year)
+                                        show_month = int(show_month)
+                                        show_day = int(show_day)
+                                        show_hour = int(show_hour)
+                                        now = jdatetime.datetime.now()
+                                        show_date = jdatetime.datetime(show_year, show_month, show_day, show_hour)
+                                        if now.today() < show_date:
+                                            movie_information = {'name': movie_name, 'show_date': str(show_date.date()),
+                                                                 'show_starts': str(show_date.time())}
+                                            with (open(f'movies/{movie_name}', 'w+', encoding='utf-8') as
+                                                  adding_movie):
+                                                json.dump(movie_information, adding_movie)
+                                            adding_movie.close()
+                                            print('movie added to show list')
+                                        else:
+                                            print('it\' past')
+                                    except ValueError:
+                                        print('incorrect date')
+                                else:
+                                    print('it\'s already in show list')
                         elif options == '0':
                             break
                 else:
