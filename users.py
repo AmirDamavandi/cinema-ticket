@@ -385,3 +385,60 @@ class User(AbstractUser):
                 print('there\'s no user with this information')
 
         return legged_in()
+
+
+class Admin(AbstractUser, ABC):
+    def sign_up(self):
+        username = input('enter your username: ')
+        username_pattern = r'^[a-zA-Z0-9_.]+$'
+        if re.match(username_pattern, username):
+            unique_username = os.listdir('users_information')
+            unique_admin = os.listdir('admins_information')
+            if not username.lower() in unique_username and username.lower() in unique_admin:
+                password = getpass.getpass('enter your password: ')
+                password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,}$'
+                if re.match(password_pattern, password):
+                    phone_number = input('enter your phone number or leave it blank: ')
+                    if phone_number.isdigit() and len(phone_number) == 11 or phone_number == '':
+                        if phone_number == '':
+                            phone_number = None
+                        id = uuid.uuid4()
+                        plans = None
+                        try:
+                            birthday, birthmonth, birthyear = input('enter your birthday d m yyyy: ').split()
+                            birthdate = datetime.datetime(int(birthyear), int(birthmonth), int(birthday)).date()
+                            date_joined = datetime.datetime.now().date()
+                        except ValueError:
+                            return 'incorrect birthdate'
+                    else:
+                        return 'incorrect phone number'
+                else:
+                    return 'incorrect password'
+            else:
+                return 'this username already exist'
+        else:
+            return 'incorrect username'
+        signed_up = True
+        self.username = username
+        self.password = password
+        self.phone_number = phone_number
+        self.id = id
+        self.birthdate = birthdate
+        self.date_joined = date_joined
+        self.plans = plans
+        if signed_up:
+            users_information = {
+                'username': self.username,
+                'password': self.password,
+                'phone_number': self.phone_number,
+                'id': str(self.id),
+                'birthdate': str(self.birthdate),
+                'date_joined': str(self.date_joined),
+                'plans': self.plans
+
+            }
+            with open(f'admins_information/{username.lower()}', 'w+', encoding='utf-8') as information:
+                json.dump(users_information, information)
+            information.close()
+            return 'your account has been created successfully'
+
