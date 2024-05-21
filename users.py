@@ -9,6 +9,13 @@ import hashlib
 from abc import ABC, abstractmethod
 
 
+class Movie:
+    def __init__(self, name, show_date, remaining_tickets):
+        self.name = name
+        self.show_date = show_date
+        self.remaining_tickets = remaining_tickets
+
+
 class BankAccount:
     def __init__(self, full_name, card_number, cvv2, exp_year, exp_month, pin, balance):
         self.full_name = full_name
