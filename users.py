@@ -7,6 +7,7 @@ import os
 import random
 import hashlib
 
+
 class BankAccount:
     def __init__(self, full_name, card_number, cvv2, exp_year, exp_month, pin, balance):
         self.full_name = full_name
@@ -106,6 +107,15 @@ class User:
                 if username == str(matching_information['username']).lower() and password == matching_information[
                     'password']:
                     logged_in = True
+                user_information = {
+                    'username': matching_information['username'],
+                    'password': matching_information['password'],
+                    'phone_number': matching_information['phone_number'],
+                    'id': matching_information['id'],
+                    'birthdate': matching_information['birthdate'],
+                    'date_joined': matching_information['date_joined'],
+                    'plans': matching_information['plans']
+                }
                 if logged_in:
                     print('logged in successfully!')
                     while True:
@@ -144,15 +154,7 @@ class User:
                                                         and new_username.lower() != str(
                                                             matching_information['username']).lower()
                                                         and not username_in_list):
-                                                    user_information = {
-                                                        'username': new_username,
-                                                        'password': matching_information['password'],
-                                                        'phone_number': matching_information['phone_number'],
-                                                        'id': matching_information['id'],
-                                                        'birthdate': matching_information['birthdate'],
-                                                        'date_joined': matching_information['date_joined'],
-                                                        'plans': matching_information['plans']
-                                                    }
+                                                    user_information['username'] = new_username
                                                     os.chdir('users_information')
                                                     os.renames(matching_information['username'], new_username.lower())
                                                     os.chdir('..')
@@ -186,15 +188,7 @@ class User:
                                                 if (new_phone_number.isdigit() and len(new_phone_number) == 11
                                                         and new_phone_number != matching_information['phone_number']
                                                 ):
-                                                    user_information = {
-                                                        'username': matching_information['username'],
-                                                        'password': matching_information['password'],
-                                                        'phone_number': new_phone_number,
-                                                        'id': matching_information['id'],
-                                                        'birthdate': matching_information['birthdate'],
-                                                        'date_joined': matching_information['date_joined'],
-                                                        'plans': matching_information['plans']
-                                                    }
+                                                    user_information['phone_number'] = new_phone_number
                                                     with open(f'users_information/{matching_information['username']}',
                                                               'w',
                                                               encoding='utf-8') as phone_number_changing:
@@ -220,19 +214,13 @@ class User:
                                                     new_password = getpass.getpass('enter your new password: ')
                                                     if re.match(password_pattern, new_password):
                                                         if new_password != matching_information['password']:
-                                                            confirm_password = getpass.getpass('confirm your password: ')
+                                                            confirm_password = getpass.getpass(
+                                                                'confirm your password: ')
                                                             if confirm_password == new_password:
-                                                                user_information = {
-                                                                    'username': matching_information['username'],
-                                                                    'password': confirm_password,
-                                                                    'phone_number': matching_information['phone_number'],
-                                                                    'id': matching_information['id'],
-                                                                    'birthdate': matching_information['birthdate'],
-                                                                    'date_joined': matching_information['date_joined'],
-                                                                    'plans': matching_information['plans']
-                                                                }
+                                                                user_information['password'] = confirm_password
                                                                 with open(
-                                                                        f'users_information/{matching_information['username']}',
+                                                                        f'users_information/{matching_information[
+                                                                            'username']}',
                                                                         'w',
                                                                         encoding='utf-8') as password_changing:
                                                                     json.dump(user_information, password_changing)
@@ -262,7 +250,17 @@ class User:
                                                       f'2-silver price : {silver_plan_price}\n'
                                                       f'3-gold price : {gold_plan_price}\n'
                                                       f'choose one of above, to get back press 0: ')
+
                                 def payment():
+                                    user_information = {
+                                        'username': matching_information['username'],
+                                        'password': matching_information['password'],
+                                        'phone_number': matching_information['phone_number'],
+                                        'id': matching_information['id'],
+                                        'birthdate': matching_information['birthdate'],
+                                        'date_joined': matching_information['date_joined'],
+                                        'plans': matching_information['plans']
+                                    }
                                     full_name = input('your full name on card: ')
                                     card_number = input('enter your card number: ')
                                     if card_number.isdigit() and len(card_number) == 16:
@@ -285,20 +283,13 @@ class User:
                                                         if select_a_plan == '1':
                                                             if (user_bank_account.withdraw(bronze_plan_price) ==
                                                                     'successful transaction'
-                                                                and matching_information['plans'] != 'Bronze plan'
+                                                                    and matching_information['plans'] != 'Bronze plan'
 
                                                             ):
-                                                                user_information = {
-                                                                    'username': matching_information['username'],
-                                                                    'password': matching_information['password'],
-                                                                    'phone_number': matching_information['phone_number'],
-                                                                    'id': matching_information['id'],
-                                                                    'birthdate': matching_information['birthdate'],
-                                                                    'date_joined': matching_information['date_joined'],
-                                                                    'plans': 'Bronze plan'
-                                                                }
+                                                                user_information['plans'] = 'Bronze plan'
                                                                 with open(f'users_information/{matching_information[
-                                                                    'username']}','w', encoding='utf-8') as bronze_plan:
+                                                                    'username']}', 'w',
+                                                                          encoding='utf-8') as bronze_plan:
                                                                     json.dump(user_information, bronze_plan)
                                                                 bronze_plan.close()
                                                                 matching_information['plans'] = 'Bronze plan'
@@ -308,20 +299,13 @@ class User:
                                                         elif select_a_plan == '2':
                                                             if (user_bank_account.withdraw(silver_plan_price) ==
                                                                     'successful transaction'
-                                                                and matching_information['plans'] != 'Silver plan'
+                                                                    and matching_information['plans'] != 'Silver plan'
 
                                                             ):
-                                                                user_information = {
-                                                                    'username': matching_information['username'],
-                                                                    'password': matching_information['password'],
-                                                                    'phone_number': matching_information['phone_number'],
-                                                                    'id': matching_information['id'],
-                                                                    'birthdate': matching_information['birthdate'],
-                                                                    'date_joined': matching_information['date_joined'],
-                                                                    'plans': 'Silver plan'
-                                                                }
+                                                                user_information['plans'] = 'Silver plan'
                                                                 with open(f'users_information/{matching_information[
-                                                                        'username']}','w', encoding='utf-8') as silver_plan:
+                                                                    'username']}', 'w',
+                                                                          encoding='utf-8') as silver_plan:
                                                                     json.dump(user_information, silver_plan)
                                                                 silver_plan.close()
                                                                 matching_information['plans'] = 'Silver plan'
@@ -331,20 +315,13 @@ class User:
                                                         elif select_a_plan == '3':
                                                             if (user_bank_account.withdraw(gold_plan_price) ==
                                                                     'successful transaction'
-                                                                and matching_information['plans'] != 'Gold plan'
+                                                                    and matching_information['plans'] != 'Gold plan'
 
                                                             ):
-                                                                user_information = {
-                                                                    'username': matching_information['username'],
-                                                                    'password': matching_information['password'],
-                                                                    'phone_number': matching_information['phone_number'],
-                                                                    'id': matching_information['id'],
-                                                                    'birthdate': matching_information['birthdate'],
-                                                                    'date_joined': matching_information['date_joined'],
-                                                                    'plans': 'Gold plan'
-                                                                }
-                                                                with open(f'users_information/{matching_information[
-                                                                        'username']}','w', encoding='utf-8') as gold_plan:
+                                                                user_information['plans'] = 'Gold plan'
+                                                                with (open(f'users_information/{matching_information[
+                                                                        'username']}', 'w', encoding='utf-8') as
+                                                                        gold_plan):
                                                                     json.dump(user_information, gold_plan)
                                                                 gold_plan.close()
                                                                 matching_information['plans'] = 'Gold plan'
@@ -363,22 +340,23 @@ class User:
                                             return 'cvv2 is incorrect'
                                     else:
                                         return 'card number is incorrect'
+
                                 if (
-                                    select_a_plan == '1' or select_a_plan.lower() == 'bronze plan'
+                                        select_a_plan == '1' or select_a_plan.lower() == 'bronze plan'
                                 ):
                                     if matching_information['plans'] != 'Bronze plan':
                                         print(payment())
                                     else:
                                         print('it\'s your current plan')
                                 elif (
-                                    select_a_plan == '2' or select_a_plan.lower() == 'silver plan'
+                                        select_a_plan == '2' or select_a_plan.lower() == 'silver plan'
                                 ):
                                     if matching_information['plans'] != 'Silver plan':
                                         print(payment())
                                     else:
                                         print('it\'s your current plan')
                                 elif (
-                                    select_a_plan == '3' or select_a_plan.lower() == 'gold plan'
+                                        select_a_plan == '3' or select_a_plan.lower() == 'gold plan'
                                 ):
                                     if matching_information['plans'] != 'Gold plan':
                                         print(payment())
@@ -386,7 +364,8 @@ class User:
                                         print('it\'s your current plan')
                                 elif select_a_plan == '0':
                                     break
-                                else:print('invalid choice')
+                                else:
+                                    print('invalid choice')
                         elif options == '0':
                             break
                 else:
