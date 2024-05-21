@@ -6,6 +6,7 @@ import json
 import os
 import random
 import hashlib
+from abc import ABC, abstractmethod
 
 
 class BankAccount:
@@ -29,7 +30,7 @@ class BankAccount:
         self.balance += amount
 
 
-class User:
+class AbstractUser(ABC):
     def __init__(self, username, password, phone_number, id, birthdate, date_joined, plans):
         self.username = username
         self.password = password
@@ -40,6 +41,16 @@ class User:
         self.date_joined = date_joined
         self.plans = plans
 
+    @abstractmethod
+    def sign_up(self):
+        pass
+
+    @abstractmethod
+    def login(self):
+        pass
+
+
+class User(AbstractUser):
     def sign_up(self):
         signed_up = False
         username = input('enter your username: ')
