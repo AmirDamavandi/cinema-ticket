@@ -1,5 +1,4 @@
 import datetime
-import time
 import uuid
 import re
 import getpass
@@ -33,7 +32,7 @@ class BankAccount:
 
 
 class AbstractUser(ABC):
-    def __init__(self, username, password, phone_number, id, birthdate, date_joined, plans):
+    def __init__(self, username, password, phone_number, id, birthdate, date_joined, plans, wallet, tickets):
         self.username = username
         self.password = password
         self.phone_number = phone_number
@@ -42,6 +41,8 @@ class AbstractUser(ABC):
         self.birthdate = birthdate
         self.date_joined = date_joined
         self.plans = plans
+        self.wallet = wallet
+        self.tickets = tickets
 
     @abstractmethod
     def sign_up(self):
@@ -69,6 +70,8 @@ class User(AbstractUser):
                             phone_number = None
                         id = uuid.uuid4()
                         plans = None
+                        wallet = 0
+                        tickets = list()
                         try:
                             birthday, birthmonth, birthyear = input('enter your birthday d m yyyy: ').split()
                             birthdate = datetime.datetime(int(birthyear), int(birthmonth), int(birthday)).date()
@@ -91,6 +94,8 @@ class User(AbstractUser):
         self.birthdate = birthdate
         self.date_joined = date_joined
         self.plans = plans
+        self.wallet = wallet
+        self.tickets = tickets
         if signed_up:
             users_information = {
                 'username': self.username,
@@ -99,7 +104,9 @@ class User(AbstractUser):
                 'id': str(self.id),
                 'birthdate': str(self.birthdate),
                 'date_joined': str(self.date_joined),
-                'plans': self.plans
+                'plans': self.plans,
+                'wallet': self.wallet,
+                'tickets': self.tickets
 
             }
             with open(f'users_information/{username.lower()}', 'w+', encoding='utf-8') as information:
@@ -127,12 +134,15 @@ class User(AbstractUser):
                     'id': matching_information['id'],
                     'birthdate': matching_information['birthdate'],
                     'date_joined': matching_information['date_joined'],
-                    'plans': matching_information['plans']
+                    'plans': matching_information['plans'],
+                    'wallet': matching_information['wallet'],
+                    'tickets': matching_information['tickets']
                 }
                 if logged_in:
                     print('logged in successfully!')
                     while True:
-                        options = input('security and privacy: 1, to get a plan 2 and 0 to log out: ')
+                        options = input('security and privacy: 1, to get a plan 2, to order a ticket 3 and 0 to log '
+                                        'out: ')
                         if options == '1':
                             while True:
                                 security_options = input('to check your information press 1, to change information '
@@ -145,7 +155,9 @@ class User(AbstractUser):
                                           f'\nid: {matching_information['id']}'
                                           f'\nbirthdate: {matching_information['birthdate']}'
                                           f'\ndate joined: {matching_information['date_joined']}'
-                                          f'\nplans: {matching_information['plans']}')
+                                          f'\nplans: {matching_information['plans']}'
+                                          f'\nwallet: {matching_information['wallet']}'
+                                          f'\ntickets: {matching_information['tickets']}')
                                 elif security_options == '2':
                                     while True:
                                         information_changing = input(
@@ -272,7 +284,9 @@ class User(AbstractUser):
                                         'id': matching_information['id'],
                                         'birthdate': matching_information['birthdate'],
                                         'date_joined': matching_information['date_joined'],
-                                        'plans': matching_information['plans']
+                                        'plans': matching_information['plans'],
+                                        'wallet': matching_information['wallet'],
+                                        'tickets': matching_information['tickets']
                                     }
                                     full_name = input('your full name on card: ')
                                     card_number = input('enter your card number: ')
@@ -379,6 +393,92 @@ class User(AbstractUser):
                                     break
                                 else:
                                     print('invalid choice')
+                        elif options == '3':
+                            def percentage(number, operator, percent):
+                                if operator == '+':
+                                    return number + (percent / 100 * number)
+                                elif operator == '-':
+                                    return number - (percent / 100 * number)
+                            user_information = {
+                                'username': matching_information['username'],
+                                'password': matching_information['password'],
+                                'phone_number': matching_information['phone_number'],
+                                'id': matching_information['id'],
+                                'birthdate': matching_information['birthdate'],
+                                'date_joined': matching_information['date_joined'],
+                                'plans': matching_information['plans'],
+                                'wallet': matching_information['wallet'],
+                                'tickets': matching_information['tickets']
+                            }
+                            shows = os.listdir('movies')
+                            while True:
+                                print('incoming shows')
+                                for show in shows:
+                                    with open(f'movies/{show}', 'r', encoding='utf-8') as show_information:
+                                        movie_information = json.load(show_information)
+                                    shows_date = movie_information['show_date']
+                                    to_date_type = jdatetime.datetime.strptime(shows_date, '%Y-%m-%d')
+                                    show_time = movie_information['show_starts']
+                                    to_time_type = jdatetime.datetime.strptime(show_time, '%H:%M:%S').time()
+                                    date = jdatetime.datetime(to_date_type.year, to_date_type.month, to_date_type.day, to_time_type.hour)
+                                    now = jdatetime.datetime.now()
+                                    if date > now.today():
+                                        print(f'Name : {movie_information['name']}          '
+                                              f'Show date : {movie_information['show_date']}          '
+                                              f'Show starts : {movie_information['show_starts']}          '
+                                              f'Remaining tickets : {movie_information['remaining_tickets']}')
+                                        show_information.close()
+                                ordering_ticket = input('enter exact movie name you wanna watch: ')
+                                ticket_price = 10
+                                movie_list = os.listdir('movies')
+                                if ordering_ticket == '0':
+                                    break
+                                user_birthdate = matching_information['birthdate']
+                                is_users_birthday = datetime.datetime.strptime(user_birthdate, '%Y-%m-%d')
+                                today = datetime.date.today()
+                                if is_users_birthday.month == today.month and is_users_birthday.day == today.day:
+                                    ticket_price = percentage(ticket_price, '-', 50)
+                                    ticket_price = int(ticket_price)
+                                else:
+                                    ticket_price = 10
+                                if ordering_ticket.lower() in movie_list:
+                                    if not ordering_ticket in matching_information['tickets']:
+                                        if not matching_information['wallet'] - ticket_price < 1:
+                                            if movie_information['remaining_tickets'] > 0:
+
+                                                user_information['tickets'] = matching_information['tickets']
+                                                user_information['tickets'].append(ordering_ticket)
+                                                matching_information['wallet'] -= ticket_price
+                                                user_information['wallet'] = matching_information['wallet']
+                                                with open(f'users_information/{matching_information['username']}', 'w',
+                                                          encoding='utf-8') as order_ticket:
+                                                    json.dump(user_information, order_ticket)
+                                                order_ticket.close()
+                                                with open(f'movies/{ordering_ticket}', 'r', encoding='utf-8') as changing_information:
+                                                    information = json.load(changing_information)
+                                                changing_information.close()
+                                                movies_information = {
+                                                    'name': information['name'],
+                                                    'show_date': information['show_date'],
+                                                    'show_starts': information['show_starts'],
+                                                    'remaining_tickets': information['remaining_tickets']
+                                                }
+                                                movies_information['remaining_tickets'] -= 1
+                                                with open(f'movies/{ordering_ticket}', 'w', encoding='utf-8') as ticket_remain:
+                                                    json.dump(movies_information, ticket_remain)
+                                                ticket_remain.close()
+                                                print('you have the ticket')
+                                                break
+                                            else:
+                                                print(f'no ticket for {ordering_ticket}')
+                                        else:
+                                            print('charge your wallet and try again')
+                                            break
+                                    else:
+                                        print(f'you have {ordering_ticket} ticket already')
+                                        break
+                                else:
+                                    print(f'{ordering_ticket} is not in show list')
                         elif options == '0':
                             break
                 else:
@@ -397,7 +497,7 @@ class Admin(AbstractUser):
             unique_username = os.listdir('admins_information')
             if not username.lower() in unique_username:
                 password = getpass.getpass('enter your password: ')
-                password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,}$'
+                password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{5,}$'
                 if re.match(password_pattern, password):
                     phone_number = input('enter your phone number or leave it blank: ')
                     if phone_number.isdigit() and len(phone_number) == 11 or phone_number == '':
@@ -480,8 +580,7 @@ class Admin(AbstractUser):
                                           f'\nphone number: {matching_information['phone_number']}'
                                           f'\nid: {matching_information['id']}'
                                           f'\nbirthdate: {matching_information['birthdate']}'
-                                          f'\ndate joined: {matching_information['date_joined']}'
-                                          f'\nplans: {matching_information['plans']}')
+                                          f'\ndate joined: {matching_information['date_joined']}')
                                 elif security_options == '2':
                                     while True:
                                         information_changing = input(
@@ -559,7 +658,7 @@ class Admin(AbstractUser):
                                                 if current_password == '0':
                                                     break
                                                 if current_password == matching_information['password']:
-                                                    password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,200}$'
+                                                    password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{5,}$'
                                                     new_password = getpass.getpass('enter your new password: ')
                                                     if re.match(password_pattern, new_password):
                                                         if new_password != matching_information['password']:
@@ -596,11 +695,10 @@ class Admin(AbstractUser):
                                 if movie_name == '0':
                                     break
                                 movie_list = os.listdir('movies')
-
                                 if not movie_name.lower() in movie_list:
                                     try:
                                         show_day, show_month, show_year = (
-                                            input('enter show date, d m yyyy: ').split())
+                                            input('enter show date, d m yyyy (jalali): ').split())
                                         show_hour = input('enter show hour (24 hour format): ')
                                         show_year = int(show_year)
                                         show_month = int(show_month)
@@ -610,8 +708,9 @@ class Admin(AbstractUser):
                                         show_date = jdatetime.datetime(show_year, show_month, show_day, show_hour)
                                         if now.today() < show_date:
                                             movie_information = {'name': movie_name, 'show_date': str(show_date.date()),
-                                                                 'show_starts': str(show_date.time())}
-                                            with (open(f'movies/{movie_name}', 'w+', encoding='utf-8') as
+                                                                 'show_starts': str(show_date.time()),
+                                                                 'remaining_tickets': 200}
+                                            with (open(f'movies/{movie_name.lower()}', 'w+', encoding='utf-8') as
                                                   adding_movie):
                                                 json.dump(movie_information, adding_movie)
                                             adding_movie.close()
