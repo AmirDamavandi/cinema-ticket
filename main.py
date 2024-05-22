@@ -2,8 +2,10 @@ from users import User, Admin
 
 
 def logged_in():
-    user = User(None, None, None, None, None, None, None)
-    admin = Admin(None, None, None, None, None, None, None)
+    user = User(None, None, None,
+                None, None, None, None, None, None)
+    admin = Admin(None, None, None,
+                  None, None, None, None, None, None)
     while True:
         login_status = input('press 2 to login, 1 for signup, to close this press 0: ')
         if login_status == '1':
