@@ -121,6 +121,7 @@ class User(AbstractUser):
 
         def legged_in():
             logged_in = False
+            user_bank_account = None
             try:
                 with open(f'users_information/{username}', 'r', encoding='utf-8') as login_information:
                     matching_information = json.load(login_information)
@@ -156,7 +157,7 @@ class User(AbstractUser):
                                           f'\nbirthdate: {matching_information['birthdate']}'
                                           f'\ndate joined: {matching_information['date_joined']}'
                                           f'\nplans: {matching_information['plans']}'
-                                          f'\nwallet: {matching_information['wallet']}'
+                                          f'\nwallet: {matching_information['wallet']:,}'
                                           f'\ntickets: {matching_information['tickets']}')
                                 elif security_options == '2':
                                     while True:
@@ -268,9 +269,9 @@ class User(AbstractUser):
                                     break
                         elif options == '2':
                             while True:
-                                bronze_plan_price = 20
-                                silver_plan_price = 50
-                                gold_plan_price = 150
+                                bronze_plan_price = 20_000
+                                silver_plan_price = 50_000
+                                gold_plan_price = 150_000
                                 select_a_plan = input(f'1-bronze price : {bronze_plan_price}\n'
                                                       f'2-silver price : {silver_plan_price}\n'
                                                       f'3-gold price : {gold_plan_price}\n'
@@ -288,7 +289,7 @@ class User(AbstractUser):
                                         'wallet': matching_information['wallet'],
                                         'tickets': matching_information['tickets']
                                     }
-                                    full_name = input('your full name on card: ')
+                                    full_name = input('enter your full name: ')
                                     card_number = input('enter your card number: ')
                                     if card_number.isdigit() and len(card_number) == 16:
                                         cvv2 = input('enter cvv2: ')
@@ -303,7 +304,7 @@ class User(AbstractUser):
                                                         expire_year_pattern, expire_month):
                                                     card_pin = input('enter your card pin: ')
                                                     if card_pin.isdigit() and 4 <= len(card_pin) <= 6:
-                                                        balance = random.randint(0, 1000)
+                                                        balance = random.randint(0, 1_000_000)
                                                         user_bank_account = BankAccount(full_name, card_number, cvv2,
                                                                                         expire_year, expire_month,
                                                                                         card_pin, balance)
@@ -423,13 +424,13 @@ class User(AbstractUser):
                                     date = jdatetime.datetime(to_date_type.year, to_date_type.month, to_date_type.day, to_time_type.hour)
                                     now = jdatetime.datetime.now()
                                     if date > now.today():
-                                        print(f'Name : {movie_information['name']}          '
+                                        print(f'Name : "{movie_information['name']}"          '
                                               f'Show date : {movie_information['show_date']}          '
                                               f'Show starts : {movie_information['show_starts']}          '
                                               f'Remaining tickets : {movie_information['remaining_tickets']}')
                                         show_information.close()
-                                ordering_ticket = input('enter exact movie name you wanna watch: ')
-                                ticket_price = 10
+                                ordering_ticket = input('enter exact name of movie you wanna watch: ')
+                                ticket_price = 50_000
                                 movie_list = os.listdir('movies')
                                 if ordering_ticket == '0':
                                     break
@@ -440,12 +441,11 @@ class User(AbstractUser):
                                     ticket_price = percentage(ticket_price, '-', 50)
                                     ticket_price = int(ticket_price)
                                 else:
-                                    ticket_price = 10
+                                    ticket_price = 50_000
                                 if ordering_ticket.lower() in movie_list:
                                     if not ordering_ticket in matching_information['tickets']:
                                         if not matching_information['wallet'] - ticket_price < 1:
                                             if movie_information['remaining_tickets'] > 0:
-
                                                 user_information['tickets'] = matching_information['tickets']
                                                 user_information['tickets'].append(ordering_ticket)
                                                 matching_information['wallet'] -= ticket_price
@@ -464,7 +464,8 @@ class User(AbstractUser):
                                                     'remaining_tickets': information['remaining_tickets']
                                                 }
                                                 movies_information['remaining_tickets'] -= 1
-                                                with open(f'movies/{ordering_ticket}', 'w', encoding='utf-8') as ticket_remain:
+                                                with (open(f'movies/{ordering_ticket}', 'w', encoding='utf-8') as
+                                                      ticket_remain):
                                                     json.dump(movies_information, ticket_remain)
                                                 ticket_remain.close()
                                                 print('you have the ticket')
@@ -478,7 +479,65 @@ class User(AbstractUser):
                                         print(f'you have {ordering_ticket} ticket already')
                                         break
                                 else:
-                                    print(f'{ordering_ticket} is not in show list')
+                                    print(f'{ordering_ticket} is not in show list or you or you entered wrong')
+                        elif options == '4':
+                            while True:
+                                try:
+                                    amount = int(input('enter amount you wanna charge(IRT) amount must be 50,000 or '
+                                                       'higher, press 0 to back: '))
+                                    if amount == 0:
+                                        break
+                                    if amount >= 50_000:
+                                        def payment():
+                                            full_name = input('enter your full name: ')
+                                            card_number = input('enter your card number: ')
+                                            if card_number.isdigit() and len(card_number) == 16:
+                                                cvv2 = input('enter cvv2: ')
+                                                if cvv2.isdigit() and len(cvv2) == 3 or len(cvv2) == 4:
+                                                    expire_month, expire_year = input(
+                                                        'enter expire month and expire year (mm yy): ').split()
+                                                    if str(expire_year).isdigit() and len(expire_year) == 2 and str(
+                                                            expire_month).isdigit() and len(expire_month) == 2:
+                                                        expire_month_pattern = r'(0[1-9]|[0-2])'
+                                                        expire_year_pattern = r'\d{2}'
+                                                        if re.match(expire_month_pattern, expire_month) and re.match(
+                                                                expire_year_pattern, expire_month):
+                                                            card_pin = input('enter your card pin: ')
+                                                            if card_pin.isdigit() and 4 <= len(card_pin) <= 6:
+                                                                balance = random.randint(0, 1_000_000)
+                                                                user_bank_account = BankAccount(full_name, card_number,
+                                                                                                cvv2, expire_year,
+                                                                                                expire_month, card_pin,
+                                                                                                balance)
+                                                                if (user_bank_account.withdraw(amount) ==
+                                                                        'successful transaction'
+                                                                ):
+                                                                    user_information['wallet'] += amount
+                                                                    with open(f'users_information/{matching_information
+                                                                    ['username']}', 'w', encoding='utf-8') as wallet_charging:
+                                                                        json.dump(user_information, wallet_charging)
+                                                                    matching_information['wallet'] = user_information['wallet']
+                                                                    return 'your wallet charged successfully'
+                                                                else:
+                                                                    return 'insufficient inventory'
+                                                            else:
+                                                                return 'card pin is incorrect'
+                                                        else:
+                                                            return 'expire date is incorrect'
+                                                    else:
+                                                        return 'expire date is incorrect'
+                                                else:
+                                                    return 'cvv2 is incorrect'
+                                            else:
+                                                return 'card number is incorrect'
+                                        result = payment()
+                                        print(result)
+                                        if result == 'your wallet charged successfully':
+                                            break
+                                    elif amount < 50_000:
+                                        print('amount must be higher than 50,000')
+                                except ValueError:
+                                    print('enter amount correct')
                         elif options == '0':
                             break
                 else:
