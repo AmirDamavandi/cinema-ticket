@@ -56,13 +56,13 @@ class AbstractUser(ABC):
 class User(AbstractUser):
     def sign_up(self):
         signed_up = False
-        username = input('enter your username: ')
+        username = input('create your username: ')
         username_pattern = r'^[a-zA-Z0-9_.]+$'
         if re.match(username_pattern, username):
             unique_username = os.listdir('users_information')
             if not username.lower() in unique_username:
-                password = getpass.getpass('enter your password: ')
-                password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,}$'
+                password = getpass.getpass('create your password: ')
+                password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{6,500}$'
                 if re.match(password_pattern, password):
                     phone_number = input('enter your phone number or leave it blank: ')
                     if phone_number.isdigit() and len(phone_number) == 11 or phone_number == '':
@@ -126,7 +126,7 @@ class User(AbstractUser):
                 with open(f'users_information/{username}', 'r', encoding='utf-8') as login_information:
                     matching_information = json.load(login_information)
                 if username == str(matching_information['username']).lower() and password == matching_information[
-                    'password']:
+                        'password']:
                     logged_in = True
                 user_information = {
                     'username': matching_information['username'],
@@ -142,15 +142,16 @@ class User(AbstractUser):
                 if logged_in:
                     print('logged in successfully!')
                     while True:
-                        options = input('security and privacy: 1, to get a plan 2, to order a ticket 3 and 0 to log '
-                                        'out: ')
+                        options = input('security and privacy 1, get a plan 2, order a ticket 3,'
+                                        ' charge your wallet 4 and 0 to log out: ')
                         if options == '1':
                             while True:
-                                security_options = input('to check your information press 1, to change information '
-                                                         'press 2, press 0 to back: ')
+                                security_options = input('to check your information press 1, to change your information'
+                                                         ' press 2, press 0 to back: ')
                                 if security_options == '1':
                                     hash_pass = hashlib.sha256(matching_information['password'].encode('utf-8'))
-                                    print(f'username: {matching_information['username']}'
+                                    print(
+                                          f'username: {matching_information['username']}'
                                           f'\npassword: {hash_pass.hexdigest()}'
                                           f'\nphone number: {matching_information['phone_number']}'
                                           f'\nid: {matching_information['id']}'
@@ -158,7 +159,8 @@ class User(AbstractUser):
                                           f'\ndate joined: {matching_information['date_joined']}'
                                           f'\nplans: {matching_information['plans']}'
                                           f'\nwallet: {matching_information['wallet']:,}'
-                                          f'\ntickets: {matching_information['tickets']}')
+                                          f'\ntickets: {matching_information['tickets']}'
+                                    )
                                 elif security_options == '2':
                                     while True:
                                         information_changing = input(
@@ -236,7 +238,7 @@ class User(AbstractUser):
                                                 if current_password == '0':
                                                     break
                                                 if current_password == matching_information['password']:
-                                                    password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{8,200}$'
+                                                    password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{6,500}$'
                                                     new_password = getpass.getpass('enter your new password: ')
                                                     if re.match(password_pattern, new_password):
                                                         if new_password != matching_information['password']:
@@ -305,11 +307,11 @@ class User(AbstractUser):
                                                     card_pin = input('enter your card pin: ')
                                                     if card_pin.isdigit() and 4 <= len(card_pin) <= 6:
                                                         balance = random.randint(0, 1_000_000)
-                                                        user_bank_account = BankAccount(full_name, card_number, cvv2,
-                                                                                        expire_year, expire_month,
-                                                                                        card_pin, balance)
+                                                        user_bank = BankAccount(full_name, card_number, cvv2,
+                                                                                expire_year, expire_month,
+                                                                                card_pin, balance)
                                                         if select_a_plan == '1':
-                                                            if (user_bank_account.withdraw(bronze_plan_price) ==
+                                                            if (user_bank.withdraw(bronze_plan_price) ==
                                                                     'successful transaction'
                                                                     and matching_information['plans'] != 'Bronze plan'
 
@@ -325,7 +327,7 @@ class User(AbstractUser):
                                                             else:
                                                                 return 'insufficient inventory'
                                                         elif select_a_plan == '2':
-                                                            if (user_bank_account.withdraw(silver_plan_price) ==
+                                                            if (user_bank.withdraw(silver_plan_price) ==
                                                                     'successful transaction'
                                                                     and matching_information['plans'] != 'Silver plan'
 
@@ -341,7 +343,7 @@ class User(AbstractUser):
                                                             else:
                                                                 return 'insufficient inventory'
                                                         elif select_a_plan == '3':
-                                                            if (user_bank_account.withdraw(gold_plan_price) ==
+                                                            if (user_bank.withdraw(gold_plan_price) ==
                                                                     'successful transaction'
                                                                     and matching_information['plans'] != 'Gold plan'
 
@@ -400,6 +402,7 @@ class User(AbstractUser):
                                     return number + (percent / 100 * number)
                                 elif operator == '-':
                                     return number - (percent / 100 * number)
+
                             user_information = {
                                 'username': matching_information['username'],
                                 'password': matching_information['password'],
@@ -414,6 +417,7 @@ class User(AbstractUser):
                             shows = os.listdir('movies')
                             while True:
                                 print('incoming shows')
+                                count = 0
                                 for show in shows:
                                     with open(f'movies/{show}', 'r', encoding='utf-8') as show_information:
                                         movie_information = json.load(show_information)
@@ -421,7 +425,9 @@ class User(AbstractUser):
                                     to_date_type = jdatetime.datetime.strptime(shows_date, '%Y-%m-%d')
                                     show_time = movie_information['show_starts']
                                     to_time_type = jdatetime.datetime.strptime(show_time, '%H:%M:%S').time()
-                                    date = jdatetime.datetime(to_date_type.year, to_date_type.month, to_date_type.day, to_time_type.hour)
+                                    date = jdatetime.datetime(to_date_type.year, to_date_type.month, to_date_type.day,
+                                                              to_time_type.hour)
+                                    count += 1
                                     now = jdatetime.datetime.now()
                                     if date > now.today():
                                         print(f'Name : "{movie_information['name']}"          '
@@ -429,6 +435,9 @@ class User(AbstractUser):
                                               f'Show starts : {movie_information['show_starts']}          '
                                               f'Remaining tickets : {movie_information['remaining_tickets']}')
                                         show_information.close()
+                                if count < 1:
+                                    print('no incoming show for now')
+                                    break
                                 ordering_ticket = input('enter exact name of movie you wanna watch: ')
                                 ticket_price = 50_000
                                 movie_list = os.listdir('movies')
@@ -454,7 +463,8 @@ class User(AbstractUser):
                                                           encoding='utf-8') as order_ticket:
                                                     json.dump(user_information, order_ticket)
                                                 order_ticket.close()
-                                                with open(f'movies/{ordering_ticket}', 'r', encoding='utf-8') as changing_information:
+                                                with (open(f'movies/{ordering_ticket}', 'r', encoding='utf-8') as
+                                                      changing_information):
                                                     information = json.load(changing_information)
                                                 changing_information.close()
                                                 movies_information = {
@@ -505,18 +515,20 @@ class User(AbstractUser):
                                                             card_pin = input('enter your card pin: ')
                                                             if card_pin.isdigit() and 4 <= len(card_pin) <= 6:
                                                                 balance = random.randint(0, 1_000_000)
-                                                                user_bank_account = BankAccount(full_name, card_number,
-                                                                                                cvv2, expire_year,
-                                                                                                expire_month, card_pin,
-                                                                                                balance)
-                                                                if (user_bank_account.withdraw(amount) ==
+                                                                user_bank = BankAccount(full_name, card_number,
+                                                                                        cvv2, expire_year,
+                                                                                        expire_month, card_pin,
+                                                                                        balance)
+                                                                if (user_bank.withdraw(amount) ==
                                                                         'successful transaction'
                                                                 ):
                                                                     user_information['wallet'] += amount
-                                                                    with open(f'users_information/{matching_information
-                                                                    ['username']}', 'w', encoding='utf-8') as wallet_charging:
+                                                                    with open(f'users_information/'
+                                                                              f'{matching_information['username']}',
+                                                                              'w',encoding='utf-8') as wallet_charging:
                                                                         json.dump(user_information, wallet_charging)
-                                                                    matching_information['wallet'] = user_information['wallet']
+                                                                    matching_information['wallet'] = user_information[
+                                                                        'wallet']
                                                                     return 'your wallet charged successfully'
                                                                 else:
                                                                     return 'insufficient inventory'
@@ -530,6 +542,7 @@ class User(AbstractUser):
                                                     return 'cvv2 is incorrect'
                                             else:
                                                 return 'card number is incorrect'
+
                                         result = payment()
                                         print(result)
                                         if result == 'your wallet charged successfully':
@@ -550,12 +563,12 @@ class User(AbstractUser):
 
 class Admin(AbstractUser):
     def sign_up(self):
-        username = input('enter your username: ')
+        username = input('create your username: ')
         username_pattern = r'^[a-zA-Z0-9_.]+$'
         if re.match(username_pattern, username):
             unique_username = os.listdir('admins_information')
             if not username.lower() in unique_username:
-                password = getpass.getpass('enter your password: ')
+                password = getpass.getpass('create your password: ')
                 password_pattern = r'^[a-zA-Z0-9!@#$%&*()_+=\'\-.]{5,}$'
                 if re.match(password_pattern, password):
                     phone_number = input('enter your phone number or leave it blank: ')
@@ -627,7 +640,8 @@ class Admin(AbstractUser):
                 if logged_in:
                     print('logged in successfully!')
                     while True:
-                        options = input('security and privacy: 1, to add a movie to show 2 and 0 to log out: ')
+                        options = input('security and privacy 1, add a movie to show 2,'
+                                        ' to check a user press 3 and 0 to log out: ')
                         if options == '1':
                             while True:
                                 security_options = input('to check your information press 1, to change information '
@@ -780,6 +794,27 @@ class Admin(AbstractUser):
                                         print('incorrect date')
                                 else:
                                     print('it\'s already in show list')
+                        elif options == '3':
+                            while True:
+                                user_username = input('enter user username, press 0 to break it: ')
+                                if user_username == '0':
+                                    break
+                                users = os.listdir('users_information')
+                                if user_username in users:
+                                    with open(f'users_information/{user_username}', 'r', encoding='utf-8') as user_checking:
+                                        information = json.load(user_checking)
+                                    print(
+                                        f'username: {information['username']}'
+                                        f'\nphone number: {information['phone_number']}'
+                                        f'\nbirthdate: {information['birthdate']}'
+                                        f'\ndate joined: {information['date_joined']}'
+                                        f'\nplans: {information['plans']}'
+                                        f'\nwallet: {information['wallet']:,}'
+                                        f'\ntickets: {information['tickets']}'
+                                    )
+                                    break
+                                else:
+                                    print(f'could not find {user_username}')
                         elif options == '0':
                             break
                 else:
