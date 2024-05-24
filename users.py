@@ -155,7 +155,8 @@ class User(AbstractUser):
                                         show_hour_to_date = jdatetime.datetime.strptime(
                                             movies_date_show['show_starts'], '%H:%M:%S').time()
                                         now = jdatetime.datetime.now()
-                                        movie_date = jdatetime.datetime(to_date_type.year, to_date_type.month, to_date_type.day, show_hour_to_date.hour)
+                                        movie_date = jdatetime.datetime(to_date_type.year, to_date_type.month,
+                                                                        to_date_type.day, show_hour_to_date.hour)
                                         if movie_date < now.today():
                                             matching_information['tickets'].remove(i)
                                             user_information['tickets'] = matching_information['tickets']
