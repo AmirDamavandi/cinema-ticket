@@ -258,9 +258,8 @@ class User(AbstractUser):
                                                             if confirm_password == new_password:
                                                                 user_information['password'] = confirm_password
                                                                 with open(
-                                                                        f'users_information/{matching_information[
-                                                                            'username']}',
-                                                                        'w',
+                                                                        f'users_information/'
+                                                                        f'{matching_information['username']}', 'w',
                                                                         encoding='utf-8') as password_changing:
                                                                     json.dump(user_information, password_changing)
                                                                 password_changing.close()
