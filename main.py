@@ -1,7 +1,7 @@
 from users import User, Admin
 
 
-def logged_in():
+def run():
     user = User(None, None, None,
                 None, None, None, None, None, None)
     admin = Admin(None, None, None,
@@ -25,4 +25,4 @@ def logged_in():
             break
 
 
-logged_in()
+run()
