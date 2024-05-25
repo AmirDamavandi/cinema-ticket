@@ -224,10 +224,8 @@ class User(AbstractUser):
                                                     if new_phone_number == matching_information['phone_number']:
                                                         print(f'"{new_phone_number}" is current phone number')
                                                 if (
-                                                        new_phone_number.isdigit() and len(new_phone_number == 11
-                                                                                           and new_phone_number !=
-                                                                                           matching_information[
-                                                                                               'phone_number'])
+                                                        new_phone_number.isdigit() and len(new_phone_number) == 11
+                                                        and new_phone_number != matching_information['phone_number']
                                                 ):
                                                     user_information['phone_number'] = new_phone_number
                                                     with open(f'users_information/{matching_information['username']}',
@@ -257,10 +255,9 @@ class User(AbstractUser):
                                                                 'confirm your password: ')
                                                             if confirm_password == new_password:
                                                                 user_information['password'] = confirm_password
-                                                                with open(
-                                                                        f'users_information/'
-                                                                        f'{matching_information['username']}', 'w',
-                                                                        encoding='utf-8') as password_changing:
+                                                                with open(f'users_information/'
+                                                                          f'{matching_information['username']}', 'w',
+                                                                          encoding='utf-8') as password_changing:
                                                                     json.dump(user_information, password_changing)
                                                                 password_changing.close()
                                                                 matching_information = user_information
@@ -682,14 +679,14 @@ class Admin(AbstractUser):
                                                 if new_username == '0':
                                                     break
                                                 username_pattern = r'^[a-zA-Z0-9_.]+$'
-                                                unique = os.listdir('users_information')
+                                                unique = os.listdir('admins_information')
                                                 username_in_list = new_username.lower() in unique
                                                 if (re.match(username_pattern, new_username)
                                                         and new_username.lower() != str(
                                                             matching_information['username']).lower()
                                                         and not username_in_list):
                                                     user_information['username'] = new_username
-                                                    os.chdir('users_information')
+                                                    os.chdir('admins_information')
                                                     os.renames(matching_information['username'], new_username.lower())
                                                     os.chdir('..')
                                                     with open(f'admins_information/{new_username}', 'w',
@@ -718,10 +715,8 @@ class Admin(AbstractUser):
                                                     if new_phone_number == matching_information['phone_number']:
                                                         print(f'"{new_phone_number}" is current phone number')
                                                 if (
-                                                        new_phone_number.isdigit() and len(new_phone_number == 11
-                                                                                           and new_phone_number !=
-                                                                                           matching_information[
-                                                                                               'phone_number'])
+                                                        new_phone_number.isdigit() and len(new_phone_number) == 11
+                                                        and new_phone_number != matching_information['phone_number']
                                                 ):
                                                     user_information['phone_number'] = new_phone_number
                                                     with open(f'admins_information/{matching_information['username']}',
