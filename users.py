@@ -193,16 +193,17 @@ class User(AbstractUser):
                                                 if (re.match(username_pattern, new_username)
                                                         and new_username.lower() != str(
                                                             matching_information['username']).lower()
-                                                        and not username_in_list):
-                                                    user_information['username'] = new_username
+                                                        and not username_in_list
+                                                ):
                                                     os.chdir('users_information')
                                                     os.renames(matching_information['username'], new_username.lower())
                                                     os.chdir('..')
-                                                    with open(f'users_information/{new_username}', 'w',
-                                                              encoding='utf-8') as username_changing:
+                                                    user_information['username'] = new_username
+                                                    matching_information['username'] = user_information['username']
+                                                    with open(f'users_information/{matching_information['username']}',
+                                                              'w', encoding='utf-8') as username_changing:
                                                         json.dump(user_information, username_changing)
                                                     username_changing.close()
-                                                    matching_information = user_information
                                                     print('your username has been changed successfully')
                                                     break
                                                 elif not re.match(username_pattern, new_username):
@@ -684,16 +685,17 @@ class Admin(AbstractUser):
                                                 if (re.match(username_pattern, new_username)
                                                         and new_username.lower() != str(
                                                             matching_information['username']).lower()
-                                                        and not username_in_list):
-                                                    user_information['username'] = new_username
+                                                        and not username_in_list
+                                                ):
                                                     os.chdir('admins_information')
                                                     os.renames(matching_information['username'], new_username.lower())
                                                     os.chdir('..')
-                                                    with open(f'admins_information/{new_username}', 'w',
-                                                              encoding='utf-8') as username_changing:
+                                                    user_information['username'] = new_username
+                                                    matching_information['username'] = user_information['username']
+                                                    with open(f'admins_information/{matching_information['username']}',
+                                                              'w', encoding='utf-8') as username_changing:
                                                         json.dump(user_information, username_changing)
                                                     username_changing.close()
-                                                    matching_information = user_information
                                                     print('your username has been changed successfully')
                                                     break
                                                 elif not re.match(username_pattern, new_username):
